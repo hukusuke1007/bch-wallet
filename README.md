@@ -1,6 +1,8 @@
 # BitcoinCash wallet
 > This is a self made BitcoinCash wallet.
 
+<a href="https://imgur.com/mPCAFh5"><img src="https://i.imgur.com/mPCAFh5.png" width="40%" height="40%" /></a>
+
 ## Usage
 
 ### Project setup
