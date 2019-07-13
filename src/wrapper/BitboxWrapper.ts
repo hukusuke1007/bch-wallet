@@ -23,7 +23,7 @@ export class BitboxWrapper {
     }
 
     public createAccount(): Account {
-        const mnemonic = this.bitbox.Mnemonic.generate(128)
+        const mnemonic = this.bitbox.Mnemonic.generate(256)
         const rootSeed = this.bitbox.Mnemonic.toSeed(mnemonic)
         const masterHDNode = this.bitbox.HDNode.fromSeed(rootSeed, this.network)
         const address = this.bitbox.ECPair.toCashAddress(masterHDNode.keyPair)
@@ -55,43 +55,46 @@ export class BitboxWrapper {
         }
     }
 
-    public async send(fromAddress: string, toAddress: string, wif: string, amount: number) {
+    public async send(fromAddress: string, toAddress: string, wif: string, amount: number): Promise<any> {
+        let result: any
         try {
             const transactionBuilder = new this.bitbox.TransactionBuilder(this.network)
             const keyPair = this.bitbox.ECPair.fromWIF(wif)
             console.log('transactionBuilder', transactionBuilder)
-            const originalAmount = this.bitbox.BitcoinCash.toSatoshi(amount)
-            console.log('amount', amount, originalAmount)
-            const utxo = await this.bitbox.Address.utxo(fromAddress);
-            if ('utxos' in utxo) {
-                console.log('utxo', utxo.utxos[0])
+            const utxoResult = await this.bitbox.Address.utxo(fromAddress)
+            console.log('utxo', utxoResult)
+            if ('utxos' in utxoResult) {
+                const utxo = utxoResult.utxos[0]
+                const utxoAmount = utxo.satoshis
+
                 // input
-                transactionBuilder.addInput(utxo.utxos[0].txid, utxo.utxos[0].vout)
+                transactionBuilder.addInput(utxo.txid, utxo.vout)
                 console.log('addInput')
+
                 // fee
                 const byteCount = this.bitbox.BitcoinCash.getByteCount({ P2PKH: 1 }, { P2PKH: 1 })
-                const sendAmount = originalAmount - byteCount
-                console.log('sendAmount', sendAmount)
+                const sendAmount = utxoAmount - byteCount
+                const toAmount = this.bitbox.BitcoinCash.toSatoshi(amount)
+                console.log('sendAmount', amount, utxoAmount, sendAmount, toAmount, byteCount)
 
                 // output
-                transactionBuilder.addOutput(toAddress, sendAmount)
-                transactionBuilder.setLockTime(50000)
+                transactionBuilder.addOutput(toAddress, toAmount)
+                transactionBuilder.addOutput(fromAddress, sendAmount - amount)
                 console.log('addOutput')
 
                 const redeemScript = undefined
-                const sign = transactionBuilder.sign(0, keyPair, redeemScript, transactionBuilder.hashTypes.SIGHASH_ALL, originalAmount, transactionBuilder.signatureAlgorithms.SCHNORR)
-                console.log('sign', sign)
+                transactionBuilder.sign(0, keyPair, redeemScript, transactionBuilder.hashTypes.SIGHASH_ALL, utxoAmount)
                 const tx = transactionBuilder.build()
                 const hex = tx.toHex()
-                // console.log('tx', tx, hex)
-                const tr = await this.bitbox.RawTransactions.decodeRawTransaction(hex)
-                console.log('tx', tr)
-                const result = await this.bitbox.RawTransactions.sendRawTransaction(hex)
+                console.log('tx', tx, hex)
+                result = await this.bitbox.RawTransactions.sendRawTransaction(hex)
                 console.log('result', result)
             }
         } catch (error) {
             console.error(error)
+            throw error
         }
+        return result
     }
 
 }

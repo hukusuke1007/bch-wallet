@@ -11,7 +11,7 @@
             <v-spacer />
             <v-btn fab small flat @click="loadAccount()" :loading="isLoading"><v-icon>cached</v-icon></v-btn>
           </v-card-actions>
-          <v-card-text>{{ wallet.balance }} btc</v-card-text>
+          <v-card-text>{{ wallet.balance }} bch</v-card-text>
           <v-card-title>
             <h3>Address</h3>
           </v-card-title>
@@ -28,14 +28,13 @@
             <h3>Send</h3>
           </v-card-title>
           <v-text-field
-            label="To address"
+            label="Address"
             v-model="toAddr"
-            :counter="42"
             required
             placeholder="ex). bchtest:qqu8yke2c0wylgjpjcdtenrcrylemuc7fsylj0rp9w"
           ></v-text-field>
           <v-text-field
-            label="ETH"
+            label="Amount"
             v-model="toAmount"
             type="number"
             required
@@ -76,12 +75,10 @@ export default class Wallet extends Vue {
     private validation: any[] = []
     private resultMessage: string = ''
     private rules: any = {
-      senderAddrLimit: (value: string) => (value && (value.length === 42)) || '送金先アドレスは0x含めた42文字です。',
       senderAddrInput: (value: string) => {
         const pattern = /^[a-zA-Z0-9-]+$/
         return pattern.test(value) || '送金先の入力が不正です'
       },
-      amountLimit: (value: number) => (value >= 0) || '数量を入力してください',
       amountInput: (value: string) => {
         const pattern = /^[0-9.]+$/
         return (pattern.test(value) && !isNaN(Number(value))) || '数量の入力が不正です'
@@ -95,7 +92,7 @@ export default class Wallet extends Vue {
     }
 
     private mounted() {
-      Vue.prototype.$toast('Hello BitcoinCash wallet')
+      Vue.prototype.$toast('Hello BitcoinCash Wallet')
     }
 
     private async loadAccount() {
@@ -110,20 +107,13 @@ export default class Wallet extends Vue {
         this.resultMessage = ''
         this.isLoading = true
         try {
-          const result = await this.wallet.sendEth(this.toAddr, this.toAmount)
-          let message
-          // if (result.status) {
-          //   message = `SUCCESS\n${result.transactionHash}`
-          //   this.resultMessage = result.transactionHash
-          // } else {
-          //   message = 'Failed'
-          //   this.resultMessage = message
-          // }
-          this.wallet.loadBalance()
+          const result = await this.wallet.send(this.toAddr, this.toAmount)
+          const message = `SUCCESS\n${result}`
+          this.resultMessage = `txHash: ${result}`
           Vue.prototype.$toast(message)
         } catch (error) {
           console.error(error)
-          this.resultMessage = error
+          this.resultMessage = `Failed ${error}`
           Vue.prototype.$toast(error)
         }
         this.isLoading = false
@@ -133,12 +123,9 @@ export default class Wallet extends Vue {
 
     private isValidation(): boolean {
       this.validation = []
-      this.validation.push(this.rules.senderAddrLimit(this.toAddr))
       this.validation.push(this.rules.senderAddrInput(this.toAddr))
-      this.validation.push(this.rules.amountLimit(this.toAmount))
       this.validation.push(this.rules.amountInput(`${this.toAmount}`))
-      const error: any[] = this.validation.filter((obj: any) => obj !== true )
-      return (error.length === 0) ? true : false
+      return (this.validation.filter((obj: any) => obj !== true ).length === 0) ? true : false
     }
 }
 </script>

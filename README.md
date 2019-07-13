@@ -29,6 +29,8 @@ Please get a coin for testnet in faucets.
 
 [https://developer.bitcoin.com/faucets/bch/](https://developer.bitcoin.com/faucets/bch/)
 
+[https://coinfaucet.eu/en/bch-testnet/](https://coinfaucet.eu/en/bch-testnet/)
+
 ## Confirm transaction.
 Please check transactions in explorer.
 

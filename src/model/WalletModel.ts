@@ -11,7 +11,6 @@ export default class WalletModel {
     private localStorageKey = 'bch-wallet'
 
     constructor() {
-        // クラス生成時にローカルストレージからアカウント情報を取得
         this.load()
         .then((result) => {
             if (result === null) {
@@ -22,22 +21,22 @@ export default class WalletModel {
                 this.save()
             } else {
                 this.address = result.address
-                // this.legacyAddress = result.legacyAddress
+                this.legacyAddress = result.legacyAddress
                 this.privateKey = result.privateKey
                 this.loadBalance()
-                this.wrapper.send(this.address, 'bchtest:qzsf6kmcdell9ned7yacxhk95q4xektjjuuqc9yx3r', this.privateKey, 0.002)
+                // this.wrapper.send(this.address, 'bchtest:qzsf6kmcdell9ned7yacxhk95q4xektjjuuqc9yx3r', this.privateKey, 0.0001)
             }
         }).catch((error) => {
             console.error(error)
         })
     }
 
-    // ローカルストレージへ保存
+    // save to localStorage
     public async save() {
         return await localForage.setItem(this.localStorageKey, this.toJSON())
     }
 
-    // ローカルストレージから取得
+    // load from localStorage
     public async load() {
         const result: any = await localForage.getItem(this.localStorageKey)
         if (result !== null) {
@@ -47,22 +46,21 @@ export default class WalletModel {
         return result
     }
 
-    public async remove() {
-        return await localForage.removeItem(this.localStorageKey)
-    }
-
+    // load coin balance
     public async loadBalance() {
         this.balance = await this.wrapper.loadBalance(this.address)
         return this.balance
     }
 
-    public async sendEth(toAddress: string, amount: number)  {
-        // return await this.wrapper.sendEthWithSign(this.address, toAddress, this.privateKey, amount)
+    // send coin
+    public async send(toAddress: string, amount: number)  {
+        return await this.wrapper.send(this.address, toAddress, this.privateKey, amount)
     }
 
     public toJSON() {
         return {
             address: this.address,
+            legacyAddress: this.legacyAddress,
             privateKey: this.privateKey,
         }
     }
