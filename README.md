@@ -5,7 +5,7 @@
 
 # Application
 
-⚠️ Clould not run.
+⚠️ Could not run.
 
 [https://hukusuke1007.github.io/bch-wallet/](https://hukusuke1007.github.io/bch-wallet/)
 
