@@ -33,7 +33,6 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "node_modules/bitbox-sdk/**/*.ts"
   ],
   "exclude": [
     "node_modules"

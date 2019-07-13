@@ -1,4 +1,4 @@
-import { BITBOX, BitcoinCash, tresturl, resturl } from 'bitbox-sdk'
+import { BITBOX, tresturl, resturl } from 'bitbox-sdk'
 
 export type Account = {
     address: string,
