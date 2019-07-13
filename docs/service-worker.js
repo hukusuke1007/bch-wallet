@@ -14,10 +14,10 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/eth-wallet/precache-manifest.ba536f5b79caece72067c97107e043ec.js"
+  "/bch-wallet/precache-manifest.5605c7dc3469f9b78551d506d15c296d.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "eth-wallet"});
+workbox.core.setCacheNameDetails({prefix: "bch-wallet"});
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
