@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/bch-wallet/precache-manifest.74efca19ef262344c3de8395977cdcf1.js"
+  "/bch-wallet/precache-manifest.70a5a6d1cb5959b5b4c557f0e20eaf59.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "bch-wallet"});
