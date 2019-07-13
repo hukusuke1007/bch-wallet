@@ -1,6 +1,6 @@
 {
-  "name": "eth-wallet",
-  "short_name": "eth-wallet",
+  "name": "bch-wallet",
+  "short_name": "bch-wallet",
   "icons": [
     {
       "src": "/img/icons/android-chrome-192x192.png",
@@ -16,5 +16,5 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#4DBA87"
+  "theme_color": "#2c3e50"
 }
