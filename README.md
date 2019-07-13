@@ -5,7 +5,7 @@
 
 # Application
 
-⚠️ Clould not run because of maybe bitbox-sdk use module commonjs. Help me!
+⚠️ Clould not run.
 
 [https://hukusuke1007.github.io/bch-wallet/](https://hukusuke1007.github.io/bch-wallet/)
 
