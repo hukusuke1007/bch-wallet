@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@types/node": "^10.11.3",
-    "bitbox-sdk": "^8.4.2",
+    "bitbox-sdk": "git+https://github.com/hukusuke1007/bitbox-sdk.git",
     "dotenv-webpack": "^1.5.7",
     "localforage": "^1.7.2",
     "register-service-worker": "^1.0.0",
@@ -29,7 +29,7 @@
     "@vue/cli-service": "^3.0.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "typescript": "^3.0.0",
+    "typescript": "3.5.3",
     "vue-template-compiler": "^2.5.17"
   },
   "postcss": {
