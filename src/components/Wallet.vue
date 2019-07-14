@@ -17,13 +17,10 @@
           </v-card-title>
           <v-card-text>{{ wallet.address }}</v-card-text>
           <v-card flat>
-            <qriously v-model="qrJson" :size="qrSize" />
+            <qriously v-model="qrJson" :size=200 />
           </v-card>
         </v-card>
         <v-card flat>
-          <div v-for="(item, index) in validation" :key="index" class="errorLabel">
-            <div v-if="item!==true">{{ item }}</div>
-          </div>
           <v-card-title>
             <h3>Send</h3>
           </v-card-title>
@@ -68,22 +65,10 @@ import WalletModel from '@/model/WalletModel'
 export default class Wallet extends Vue {
     private isLoading: boolean = false
     private wallet: WalletModel = new WalletModel()
-    private qrSize: number = 200
     private toAmount: number = 0
     private toAddr: string = ''
     private qrJson: string = ''
-    private validation: any[] = []
     private resultMessage: string = ''
-    private rules: any = {
-      senderAddrInput: (value: string) => {
-        const pattern = /^[a-zA-Z0-9-]+$/
-        return pattern.test(value) || '送金先の入力が不正です'
-      },
-      amountInput: (value: string) => {
-        const pattern = /^[0-9.]+$/
-        return (pattern.test(value) && !isNaN(Number(value))) || '数量の入力が不正です'
-      },
-    }
 
     @Watch('wallet.legacyAddress')
     private onValueChange(newValue: string, oldValue: string): void {
@@ -102,31 +87,21 @@ export default class Wallet extends Vue {
     }
 
     private async onSend() {
-      if (this.isValidation() === true) {
-        console.log('OK')
-        this.resultMessage = ''
-        this.isLoading = true
-        try {
-          const result = await this.wallet.send(this.toAddr, this.toAmount)
-          const message = `SUCCESS\n${result}`
-          this.resultMessage = `txHash: ${result}`
-          Vue.prototype.$toast(message)
-        } catch (error) {
-          console.error(error)
-          this.resultMessage = `Failed ${error}`
-          Vue.prototype.$toast(error)
-        }
-        this.isLoading = false
+      this.resultMessage = ''
+      this.isLoading = true
+      try {
+        const result = await this.wallet.send(this.toAddr, this.toAmount)
+        const message = `SUCCESS\n${result}`
+        this.resultMessage = `txHash: ${result}`
+        Vue.prototype.$toast(message)
+      } catch (error) {
+        console.error(error)
+        this.resultMessage = `Failed ${error}`
+        Vue.prototype.$toast(error)
       }
-      console.log(this.isValidation())
+      this.isLoading = false
     }
 
-    private isValidation(): boolean {
-      this.validation = []
-      this.validation.push(this.rules.senderAddrInput(this.toAddr))
-      this.validation.push(this.rules.amountInput(`${this.toAmount}`))
-      return (this.validation.filter((obj: any) => obj !== true ).length === 0) ? true : false
-    }
 }
 </script>
 <style lang="stylus" scoped>

@@ -72,15 +72,14 @@ export class BitboxWrapper {
                 console.log('addInput')
 
                 // fee
-                const byteCount = this.bitbox.BitcoinCash.getByteCount({ P2PKH: 1 }, { P2PKH: 1 })
-                const sendAmount = utxoAmount - byteCount
                 const toAmount = this.bitbox.BitcoinCash.toSatoshi(amount)
+                const byteCount = this.bitbox.BitcoinCash.getByteCount({ P2PKH: 2 }, { P2PKH: 2 })
+                const sendAmount = utxoAmount - toAmount - byteCount
                 console.log('sendAmount', amount, utxoAmount, sendAmount, toAmount, byteCount)
 
                 // output
                 transactionBuilder.addOutput(toAddress, toAmount)
-                transactionBuilder.addOutput(fromAddress, sendAmount - amount)
-                console.log('addOutput')
+                transactionBuilder.addOutput(fromAddress, sendAmount)
 
                 const redeemScript = undefined
                 transactionBuilder.sign(0, keyPair, redeemScript, transactionBuilder.hashTypes.SIGHASH_ALL, utxoAmount)
@@ -91,7 +90,6 @@ export class BitboxWrapper {
                 console.log('result', result)
             }
         } catch (error) {
-            console.error(error)
             throw error
         }
         return result

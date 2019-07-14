@@ -24,7 +24,6 @@ export default class WalletModel {
                 this.legacyAddress = result.legacyAddress
                 this.privateKey = result.privateKey
                 this.loadBalance()
-                // this.wrapper.send(this.address, 'bchtest:qzsf6kmcdell9ned7yacxhk95q4xektjjuuqc9yx3r', this.privateKey, 0.0001)
             }
         }).catch((error) => {
             console.error(error)
