@@ -80,6 +80,7 @@ export class BitboxWrapper {
                 // output
                 transactionBuilder.addOutput(toAddress, toAmount)
                 transactionBuilder.addOutput(fromAddress, sendAmount)
+                console.log('addOutput')
 
                 const redeemScript = undefined
                 transactionBuilder.sign(0, keyPair, redeemScript, transactionBuilder.hashTypes.SIGHASH_ALL, utxoAmount)

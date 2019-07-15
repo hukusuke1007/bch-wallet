@@ -96,8 +96,8 @@ export default class Wallet extends Vue {
         Vue.prototype.$toast(message)
       } catch (error) {
         console.error(error)
-        this.resultMessage = `Failed ${error}`
-        Vue.prototype.$toast(error)
+        this.resultMessage = `Failed ${error.error}`
+        Vue.prototype.$toast(this.resultMessage)
       }
       this.isLoading = false
     }
