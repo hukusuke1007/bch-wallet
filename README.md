@@ -12,26 +12,29 @@
 
 ## Usage for developer
 
-### Project setup
-Install libraries.
+Clone project.
 
-```
-yarn
+```sh
+git clone https://github.com/hukusuke1007/bch-wallet.git
+cd bch-wallet
 ```
 
-### Network
-Please set network in .env.<br>
+Set network in .env.<br>
 
 ``` bash
 NETWORK = 'testnet'
 ```
 
-### Compiles and hot-reloads for development
-Please run the following command and then run in localhost.
+Run commands.
 
-``` bash
-yarn serve
+```sh
+# Install libraries
+$ yarn install
+
+# Run localhost
+$ yarn serve
 ```
+
 
 ## Get a BCH coin for testnet
 Please get a coin for testnet in faucets.
@@ -45,6 +48,8 @@ Please check transactions in explorer.
 
 [https://explorer.bitcoin.com/bch](https://explorer.bitcoin.com/bch)
 
+## Reference
+[https://developer.bitcoin.com/bitbox/docs/getting-started](https://developer.bitcoin.com/bitbox/docs/getting-started)
 
 ## Author
 shohei<br>

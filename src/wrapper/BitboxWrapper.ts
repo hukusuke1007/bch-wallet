@@ -56,44 +56,62 @@ export class BitboxWrapper {
     }
 
     public async send(fromAddress: string, toAddress: string, wif: string, amount: number): Promise<any> {
-        let result: any
         try {
             const transactionBuilder = new this.bitbox.TransactionBuilder(this.network)
             const keyPair = this.bitbox.ECPair.fromWIF(wif)
-            console.log('transactionBuilder', transactionBuilder)
             const utxoResult = await this.bitbox.Address.utxo(fromAddress)
-            console.log('utxo', utxoResult)
             if ('utxos' in utxoResult) {
-                const utxo = utxoResult.utxos[0]
-                const utxoAmount = utxo.satoshis
+                const toSatoshi = this.bitbox.BitcoinCash.toSatoshi(amount)
 
                 // input
-                transactionBuilder.addInput(utxo.txid, utxo.vout)
+                const utxos = utxoResult.utxos.sort((a, b) => {
+                    if (a.satoshis > b.satoshis) { return -1 }
+                    if (a.satoshis < b.satoshis) { return 1 }
+                    return 0
+                })
+                console.log('utxos', utxos)
+                let utxoSatoshi = 0
+                const inputs = []
+                for (const item of utxos) {
+                    inputs.push(item)
+                    utxoSatoshi += item.satoshis
+                    transactionBuilder.addInput(item.txid, item.vout)
+                    if (toSatoshi < utxoSatoshi) {
+                        break
+                    }
+                }
                 console.log('addInput')
 
                 // fee
-                const toAmount = this.bitbox.BitcoinCash.toSatoshi(amount)
-                const byteCount = this.bitbox.BitcoinCash.getByteCount({ P2PKH: 2 }, { P2PKH: 2 })
-                const sendAmount = utxoAmount - toAmount - byteCount
-                console.log('sendAmount', amount, utxoAmount, sendAmount, toAmount, byteCount)
+                const byteCount = this.bitbox.BitcoinCash.getByteCount({ P2PKH: inputs.length }, { P2PKH: 1 })
+                const txFee = Math.ceil(byteCount)
 
                 // output
-                transactionBuilder.addOutput(toAddress, toAmount)
-                transactionBuilder.addOutput(fromAddress, sendAmount)
-                console.log('addOutput')
+                const remainSatoshi = utxoSatoshi - toSatoshi - txFee
+                console.log('sendAmount', amount, utxoSatoshi, remainSatoshi, toSatoshi, txFee)
+                transactionBuilder.addOutput(toAddress, toSatoshi)
+                transactionBuilder.addOutput(fromAddress, remainSatoshi)
+                console.log('addOutput', 'inputs.length', inputs.length)
 
+                // sign
                 const redeemScript = undefined
-                transactionBuilder.sign(0, keyPair, redeemScript, transactionBuilder.hashTypes.SIGHASH_ALL, utxoAmount)
+                inputs.forEach((input, index) => {
+                  transactionBuilder.sign(
+                    index,
+                    keyPair,
+                    redeemScript,
+                    transactionBuilder.hashTypes.SIGHASH_ALL,
+                    input.satoshis,
+                  )
+                })
                 const tx = transactionBuilder.build()
                 const hex = tx.toHex()
-                console.log('tx', tx, hex)
-                result = await this.bitbox.RawTransactions.sendRawTransaction(hex)
-                console.log('result', result)
+                console.log('sign', tx, hex)
+                return await this.bitbox.RawTransactions.sendRawTransaction(hex)
             }
         } catch (error) {
             throw error
         }
-        return result
     }
 
 }
